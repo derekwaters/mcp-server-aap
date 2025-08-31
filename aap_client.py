@@ -48,18 +48,17 @@ class JobLaunch(BaseModel):
     related: Dict[str, str] = {}
     summary_fields: Dict[str, Any] = {}
 
-
 class Host(BaseModel):
     """Host Model"""
     name: str
     description: str
     enabled: bool = False
+
 class Inventory(BaseModel):
     """Inventory Model"""
     id: int
     name: str
     description: str
-    organization: int
     hosts: List[Host] = []
 
 class AAPClient:
@@ -189,7 +188,8 @@ class AAPClient:
             # Get the linked hosts for the inventory
             host_response = await self._make_request("GET", f"inventories/{inventory_data['id']}/hosts/", params={"page_size": 200})
             for host_data in host_response.get("results", []):
-                new_inventory["hosts"].append(Host(**host_data))
+                new_host = Host(**host_data)
+                new_inventory.hosts.append(new_host)
 
             inventories.append(new_inventory)
 

@@ -17,7 +17,7 @@ logging.basicConfig(level=logging.DEBUG)
 logger = logging.getLogger(__name__)
 
 # Import our modules
-from aap_client import AAPClient, AAPConfig, JobTemplate, JobLaunch
+from aap_client import AAPClient, AAPConfig, JobTemplate, JobLaunch, Host, Inventory
 
 class UnitTestRunner:
     """Run unit tests for MCP server components"""
