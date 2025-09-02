@@ -1,0 +1,47 @@
+-----------
+What job templates are available in AAP?
+-----------
+What host inventories are available in AAP? Does one of them contain a host named "my_app_server"?
+-----------
+
+
+How could I use AAP to fix this error:
+
+{
+"event_type": "warning",
+"host": "my_app_server",
+"error": "Low disk space on volume /data"
+}
+
+?
+------------
+Yes, please run the job template.
+-----------
+
+Can you generate an Ansible playbook to correct this error?
+
+{
+"event_type": "warning",
+"host": "my_app_server",
+"error": "Low disk space on volume /data"
+}
+
+?
+
+
+
+
+
+
+
+
+
+
+
+
+-----------
+
+curl -fsSL https://ollama.com/install.sh | sh
+ollama run llama3.2:3b --keepalive 60m
+sudo dnf install gcc python-devel python3.11-devel
+OLLAMA_URL=http://localhost:11434 uv run --with llama-stack llama stack build --template starter --image-type venv --run
