@@ -45,3 +45,16 @@ curl -fsSL https://ollama.com/install.sh | sh
 ollama run llama3.2:3b --keepalive 60m
 sudo dnf install gcc python-devel python3.11-devel
 OLLAMA_URL=http://localhost:11434 uv run --with llama-stack llama stack build --template starter --image-type venv --run
+
+
+------------
+uv tool install mcp-proxy
+mcp-proxy python server.py --port 8083
+Test with:
+mcp-proxy http://127.0.0.1:8083/sse
+Configure MCP server as:
+
+"aap-mcp-proxy": {
+    "url": "http://localhost:8083/sse",
+    "type": "http"
+}
