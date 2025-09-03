@@ -19,4 +19,4 @@ EXPOSE 8080
 # ENV AAP_PROJECT_ID=your-project-id
 
 # Default command to run MCP server
-CMD ["mcp-proxy", "python", "server.py", "--port", "8080"]
+CMD ["mcp-proxy", "python", "server.py", "--port", "8080", "--host", "0.0.0.0"]
