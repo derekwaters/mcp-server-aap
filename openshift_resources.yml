@@ -10,8 +10,8 @@ metadata:
   namespace: mcp
 data:
   AAP_PROJECT_ID: '8'
-  AAP_TOKEN: baas3e8spGuonz3VubQbpT8fwybfn5
-  AAP_URL: 'https://aap-aiops-aap.apps.cluster-gkh96.gkh96.sandbox554.opentlc.com'
+  AAP_TOKEN: TODO
+  AAP_URL: TODO
   AAP_VERIFY_SSL: 'false'
 
 ---
