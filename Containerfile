@@ -8,7 +8,7 @@ COPY requirements.txt ./
 RUN python -m pip install --no-cache-dir -r requirements.txt
 
 # Copy application code
-COPY . .
+COPY aap_client.py requirements.txt server.py .
 
 # Expose port if needed (optional, for HTTP server)
 EXPOSE 8080
@@ -19,4 +19,4 @@ EXPOSE 8080
 # ENV AAP_PROJECT_ID=your-project-id
 
 # Default command to run MCP server
-CMD ["mcp-proxy", "python", "server.py", "--port", "8080", "--host", "0.0.0.0"]
+CMD ["mcp-proxy", "python", "server.py", "--port", "8080", "--host", "0.0.0.0", "--pass-environment"]
