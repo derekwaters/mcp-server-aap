@@ -36,6 +36,11 @@ async def list_tools() -> List[Tool]:
             inputSchema={
                 "type": "object",
                 "properties": {
+                    # NOTE: Some MCP clients send session_id, ignore it
+                    "session_id": {
+                        "type": "string",
+                        "description": "OPTIONAL"
+                    },
                     "project_id": {
                         "type": "string",
                         "description": "OPTIONAL"
@@ -50,6 +55,11 @@ async def list_tools() -> List[Tool]:
             inputSchema={
                 "type": "object",
                 "properties": {
+                    # NOTE: Some MCP clients send session_id, ignore it
+                    "session_id": {
+                        "type": "string",
+                        "description": "OPTIONAL"
+                    },
                     "organization_id": {
                         "type": "string",
                         "description": "OPTIONAL"
@@ -64,6 +74,11 @@ async def list_tools() -> List[Tool]:
             inputSchema={
                 "type": "object",
                 "properties": {
+                    # NOTE: Some MCP clients send session_id, ignore it
+                    "session_id": {
+                        "type": "string",
+                        "description": "OPTIONAL"
+                    },
                     "template_id": {
                         "type": "integer",
                         "description": "ID of the job template to launch"
@@ -93,6 +108,11 @@ async def list_tools() -> List[Tool]:
             inputSchema={
                 "type": "object",
                 "properties": {
+                    # NOTE: Some MCP clients send session_id, ignore it
+                    "session_id": {
+                        "type": "string",
+                        "description": "OPTIONAL"
+                    },
                     "job_id": {
                         "type": "integer",
                         "description": "ID of the job to check"
@@ -108,6 +128,11 @@ async def list_tools() -> List[Tool]:
             inputSchema={
                 "type": "object",
                 "properties": {
+                    # NOTE: Some MCP clients send session_id, ignore it
+                    "session_id": {
+                        "type": "string",
+                        "description": "OPTIONAL"
+                    },
                     "job_id": {
                         "type": "integer",
                         "description": "ID of the job to get output from"
