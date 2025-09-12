@@ -40,10 +40,6 @@ async def list_tools() -> List[Tool]:
                     "session_id": {
                         "type": "string",
                         "description": "OPTIONAL"
-                    },
-                    "project_id": {
-                        "type": "string",
-                        "description": "OPTIONAL"
                     }
                 },
                 "additionalProperties": False
@@ -57,10 +53,6 @@ async def list_tools() -> List[Tool]:
                 "properties": {
                     # NOTE: Some MCP clients send session_id, ignore it
                     "session_id": {
-                        "type": "string",
-                        "description": "OPTIONAL"
-                    },
-                    "organization_id": {
                         "type": "string",
                         "description": "OPTIONAL"
                     }

@@ -147,10 +147,10 @@ class AAPClient:
 
     async def get_job_templates(self, project_id: Optional[str] = None) -> List[JobTemplate]:
         """Get job templates from the configured project"""
-        if not project_id:
-            project_id = self.config.project_id
+        params = {"page_size": 200}
+        if project_id:
+            params["project"] = project_id
 
-        params = {"project": project_id, "page_size": 200}
         response = await self._make_request("GET", "job_templates/", params=params)
 
         templates = []
