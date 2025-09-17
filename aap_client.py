@@ -20,7 +20,7 @@ class AAPConfig(BaseModel):
     url: str
     token: str
     project_id: str
-    verify_ssl: bool = True
+    verify_ssl: bool = False
     timeout: int = 30
     max_retries: int = 3
 

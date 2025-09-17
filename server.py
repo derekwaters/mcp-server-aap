@@ -76,15 +76,14 @@ async def list_tools() -> List[Tool]:
                         "description": "ID of the job template to launch"
                     },
                     "extra_vars": {
-                        "type": "object",
-                        "description": "Extra variables to pass to the job template",
-                        "additionalProperties": True
+                        "type": "string",
+                        "description": "A JSON-encoded string containing any Extra variables to pass to the job template"
                     },
-                    "inventory": {
+                    "inventory_id": {
                         "type": "integer",
                         "description": "Optional inventory ID to use"
                     },
-                    "credentials": {
+                    "credential_ids": {
                         "type": "array",
                         "items": {"type": "integer"},
                         "description": "Optional list of credential IDs to use"
@@ -277,6 +276,11 @@ async def call_tool(name: str, arguments: Dict[str, Any]):
                 extra_vars = arguments.get("extra_vars")
                 inventory = arguments.get("inventory")
                 credentials = arguments.get("credentials")
+
+                if extra_vars and isinstance(extra_vars, str):
+                    extra_vars = json.loads(extra_vars)
+                else:
+                    extra_vars = None
 
                 launch_result = await client.launch_job_template(
                     template_id=template_id,
