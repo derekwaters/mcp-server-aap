@@ -7,6 +7,8 @@ Provides functions to extract templates and launch jobs
 import asyncio
 import json
 import logging
+import re
+import random
 from typing import Any, Dict, List, Optional
 from mcp.server import Server
 from mcp.server.stdio import stdio_server
@@ -25,6 +27,15 @@ logger = logging.getLogger(__name__)
 # Initialize MCP server
 server = Server("ansible-aap-server")
 
+# NOTE: This function is needed because Qwen seems to think that
+# having a parameter marked as integer means it should send it as
+# 12.0 not 12. Sigh.
+#
+def safe_get_int_arg(arguments: object, arg_name: str) -> int | None:
+    val = arguments.get(arg_name)
+    if val is not None and isinstance(val, float):
+        val = int(val)
+    return val
 
 @server.list_tools()
 async def list_tools() -> List[Tool]:
@@ -36,7 +47,7 @@ async def list_tools() -> List[Tool]:
             inputSchema={
                 "type": "object",
                 "properties": {
-                    # NOTE: Some MCP clients send session_id, ignore it
+                    # NOTE: Some MCP clients (eg llama-stack MCP) send session_id, ignore it
                     "session_id": {
                         "type": "string",
                         "description": "OPTIONAL"
@@ -77,16 +88,14 @@ async def list_tools() -> List[Tool]:
                     },
                     "extra_vars": {
                         "type": "string",
+                        # NOTE: llama-stack and qwen really could not get around the idea of
+                        # embedding a subobject here, hence the need to make this a JSON-encoded
+                        # string of extra_vars
                         "description": "A JSON-encoded string containing any Extra variables to pass to the job template"
                     },
                     "inventory_id": {
                         "type": "integer",
                         "description": "Optional inventory ID to use"
-                    },
-                    "credential_ids": {
-                        "type": "array",
-                        "items": {"type": "integer"},
-                        "description": "Optional list of credential IDs to use"
                     }
                 },
                 "required": ["template_id"],
@@ -139,6 +148,30 @@ async def list_tools() -> List[Tool]:
             inputSchema={
                 "type": "object",
                 "properties": {},
+                "additionalProperties": False
+            }
+        ),
+        Tool(
+            name="create_incident",
+            description="Generate an incident record and return an incident number",
+            inputSchema={
+                "type": "object",
+                "properties": {
+                    # NOTE: Some MCP clients send session_id, ignore it
+                    "session_id": {
+                        "type": "string",
+                        "description": "OPTIONAL"
+                    },
+                    "affected_host": {
+                        "type": "string",
+                        "description": "The hostname affected by the incident"
+                    },
+                    "error_description": {
+                        "type": "string",
+                        "description": "Any additional error details"
+                    }
+                },
+                "required": ["affected_host"],
                 "additionalProperties": False
             }
         )
@@ -272,11 +305,10 @@ async def call_tool(name: str, arguments: Dict[str, Any]):
                 ]
 
             elif name == "launch_job_template":
-                template_id = arguments["template_id"]
+                template_id = safe_get_int_arg(arguments, "template_id")
                 extra_vars = arguments.get("extra_vars")
-                inventory = arguments.get("inventory")
-                credentials = arguments.get("credentials")
-
+                inventory = safe_get_int_arg(arguments, "inventory_id")
+                
                 if extra_vars and isinstance(extra_vars, str):
                     extra_vars = json.loads(extra_vars)
                 else:
@@ -286,7 +318,6 @@ async def call_tool(name: str, arguments: Dict[str, Any]):
                     template_id=template_id,
                     extra_vars=extra_vars,
                     inventory=inventory,
-                    credentials=credentials
                 )
 
                 return [
@@ -302,7 +333,7 @@ async def call_tool(name: str, arguments: Dict[str, Any]):
                 ]
 
             elif name == "get_job_status":
-                job_id = arguments["job_id"]
+                job_id = safe_get_int_arg(arguments, "job_id")
                 job_status = await client.get_job_status(job_id)
 
                 # Extract key status information
@@ -318,6 +349,13 @@ async def call_tool(name: str, arguments: Dict[str, Any]):
                     "playbook": job_status.get("playbook")
                 }
 
+                check_explanation = job_status.get("job_explanation")
+                if check_explanation:
+                    print(f"GOT A POSSIBLE JOB VIOLATION: {check_explanation}")
+                    find_violation = re.search("^This job cannot be executed due to a policy violation.*Violations': {'([A-Za-z]+)': ['(.+)'", check_explanation)
+                    if find_violation:
+                        status_info["explanation"] = f"Policy was violated on {find_violation.group(1)} : {find_violation.group(2)}. Please correct the issue and launch the job again" 
+
                 return [
                     TextContent(
                         type="text",
@@ -327,7 +365,7 @@ async def call_tool(name: str, arguments: Dict[str, Any]):
                 ]
 
             elif name == "get_job_output":
-                job_id = arguments["job_id"]
+                job_id = safe_get_int_arg(arguments, "job_id")
                 job_output = await client.get_job_stdout(job_id)
 
                 return [
@@ -347,6 +385,13 @@ async def call_tool(name: str, arguments: Dict[str, Any]):
                              f"Project ID: {client.config.project_id}\n" + \
                              f"SSL Verification: {client.config.verify_ssl}"
 
+                return [TextContent(type="text", text=result_text)]
+
+            elif name == "create_incident":
+                # NOTE: This is a dummy function for demo purposes only
+                # TODO: Investigate MCP servers for ServiceNow to do this
+
+                result_text = f"Created new Incident with Incident Number: INC-{random.randint(1000, 9999)}"
                 return [TextContent(type="text", text=result_text)]
 
             else:
