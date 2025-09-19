@@ -33,7 +33,7 @@ server = Server("ansible-aap-server")
 #
 def safe_get_int_arg(arguments: object, arg_name: str) -> int | None:
     val = arguments.get(arg_name)
-    if val is not None and isinstance(val, float):
+    if val is not None and not isinstance(val, int):
         val = int(val)
     return val
 
@@ -83,8 +83,8 @@ async def list_tools() -> List[Tool]:
                         "description": "OPTIONAL"
                     },
                     "template_id": {
-                        "type": "integer",
-                        "description": "ID of the job template to launch"
+                        "type": "string",
+                        "description": "integer ID of the job template to launch"
                     },
                     "extra_vars": {
                         "type": "string",
@@ -94,7 +94,7 @@ async def list_tools() -> List[Tool]:
                         "description": "A JSON-encoded string containing any Extra variables to pass to the job template"
                     },
                     "inventory_id": {
-                        "type": "integer",
+                        "type": "string",
                         "description": "Optional inventory ID to use"
                     }
                 },
@@ -114,7 +114,7 @@ async def list_tools() -> List[Tool]:
                         "description": "OPTIONAL"
                     },
                     "job_id": {
-                        "type": "integer",
+                        "type": "string",
                         "description": "ID of the job to check"
                     }
                 },
@@ -134,7 +134,7 @@ async def list_tools() -> List[Tool]:
                         "description": "OPTIONAL"
                     },
                     "job_id": {
-                        "type": "integer",
+                        "type": "string",
                         "description": "ID of the job to get output from"
                     }
                 },
@@ -351,8 +351,9 @@ async def call_tool(name: str, arguments: Dict[str, Any]):
 
                 check_explanation = job_status.get("job_explanation")
                 if check_explanation:
-                    print(f"GOT A POSSIBLE JOB VIOLATION: {check_explanation}")
-                    find_violation = re.search("^This job cannot be executed due to a policy violation.*Violations': {'([A-Za-z]+)': ['(.+)'", check_explanation)
+                    check_explanation = check_explanation.replace("\n", "")
+                    check_explanation = re.sub(r"'\s+'", "", check_explanation)
+                    find_violation = re.search(r"^This job cannot be executed due to a policy violation.*Violations': {'([A-Za-z]+)': \['(.+)'", check_explanation)
                     if find_violation:
                         status_info["explanation"] = f"Policy was violated on {find_violation.group(1)} : {find_violation.group(2)}. Please correct the issue and launch the job again" 
 
