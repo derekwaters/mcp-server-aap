@@ -196,7 +196,8 @@ class AAPClient:
         return inventories
 
     async def launch_job_template(self, template_id: int, extra_vars: Optional[Dict[str, Any]] = None,
-                                 inventory: Optional[int] = None, credentials: Optional[List[int]] = None) -> JobLaunch:
+                                 inventory: Optional[int] = None, credentials: Optional[List[int]] = None, 
+                                 limit: Optional[str] = None) -> JobLaunch:
         """Launch a job template with optional parameters"""
         payload = {}
 
@@ -208,6 +209,9 @@ class AAPClient:
 
         if credentials:
             payload["credentials"] = credentials
+
+        if limit:
+            payload["limit"] = limit
 
         response = await self._make_request("POST", f"job_templates/{template_id}/launch/", json=payload)
         return JobLaunch(**response)

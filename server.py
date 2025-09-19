@@ -93,6 +93,10 @@ async def list_tools() -> List[Tool]:
                         # string of extra_vars
                         "description": "A JSON-encoded string containing any Extra variables to pass to the job template"
                     },
+                    "limit": {
+                        "type": "string",
+                        "description": "The name of the host to launch this job template against"
+                    },
                     "inventory_id": {
                         "type": "string",
                         "description": "Optional inventory ID to use"
@@ -308,6 +312,7 @@ async def call_tool(name: str, arguments: Dict[str, Any]):
                 template_id = safe_get_int_arg(arguments, "template_id")
                 extra_vars = arguments.get("extra_vars")
                 inventory = safe_get_int_arg(arguments, "inventory_id")
+                limit = arguments.get("limit")
                 
                 if extra_vars and isinstance(extra_vars, str):
                     extra_vars = json.loads(extra_vars)
@@ -318,6 +323,7 @@ async def call_tool(name: str, arguments: Dict[str, Any]):
                     template_id=template_id,
                     extra_vars=extra_vars,
                     inventory=inventory,
+                    limit=limit,
                 )
 
                 return [
