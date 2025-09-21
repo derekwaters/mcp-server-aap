@@ -16,7 +16,10 @@ from termcolor import cprint
 import sys
 sys.path.append('.')
 
-base_url = "http://0.0.0.0:8321"
+base_url = os.getenv("LLAMASTACK_URL", "http://0.0.0.0:8321")
+aap_mcp_url = os.getenv("REMOTE_AAP_MCP_URL")
+model_id = os.getenv("LLAMASTACK_MODEL_ID", "ollama/qwen3:4b")
+
 
 client = LlamaStackClient(
     base_url=base_url,
@@ -29,11 +32,7 @@ print(f"Connected to Llama Stack server")
 models = client.models.list()
 
 # Select the first ollama llm
-model_id = next(m for m in models if m.model_type == "llm" and m.provider_id == "ollama").identifier
-
-# Nah, you know what, let's force it
-model_id = "ollama/qwen3:4b"
-
+# model_id = next(m for m in models if m.model_type == "llm" and m.provider_id == "ollama").identifier
 
 temperature = float(os.getenv("TEMPERATURE", 0.0))
 if temperature > 0.0:
@@ -55,8 +54,6 @@ stream = False
 print(f"Inference Parameters:\n\tModel: {model_id}\n\tSampling Parameters: {sampling_params}\n\tstream: {stream}")
 
 
-
-aap_mcp_url = os.getenv("REMOTE_AAP_MCP_URL")
 
 print(f"Using AAP URL {aap_mcp_url}")
 
