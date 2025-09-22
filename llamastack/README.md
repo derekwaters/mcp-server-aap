@@ -33,7 +33,16 @@ or
 
 uv run --with llama-stack-client,fire,requests,dotenv agentic-aap-demo.py
 
+# Run mcp-test inside OpenShift
+oc login ...
+oc run agentic-test -ti --image=quay.io/rh-ee-dwaters/agentic-aap-demo:latest --rm=true --restart=Never \
+    --env="LLAMASTACK_URL=http://llamastack-with-config-service.llama-stack.svc.cluster.local:8321" \
+    --env="REMOTE_AAP_MCP_URL=<AAP_MCP_SERVER_URL>" \
+    --env="LLAMASTACK_MODEL_ID=deepseek/deepseek-r1-0528-qwen3-8b-bnb-4bit" \
+    -- /bin/bash
 
+
+python agentic-aap-demo.py
 
 # Script tests
 

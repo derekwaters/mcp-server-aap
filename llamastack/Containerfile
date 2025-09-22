@@ -21,3 +21,4 @@ EXPOSE 8080
 
 # NOTE: Run python agentic-aap-demo.py
 
+CMD ["/bin/bash"]
